@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "sillyserver",
+	"version": "${version}",
+	"name": "sillyserver",
+	"description": "Cosmetics for sillyserver",
+	"authors": [
+		"palight"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/sillyserver/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"sillyserver.Sillyserver"
+		],
+		"client": [
+			"sillyserver.SillyserverClient"
+		]
+	},
+	"mixins": [
+		"sillyserver.mixins.json",
+		{
+			"config": "sillyserver.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

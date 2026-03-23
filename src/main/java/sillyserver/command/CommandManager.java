@@ -80,7 +80,7 @@ public class CommandManager {
 
                     context.getSource().sendSuccess(() -> Component.literal("Click to purchase a rank.").withStyle(style -> {
                         try {
-                            return style.withClickEvent(new ClickEvent.OpenUrl(new URI("http://localhost:60904/ranks.html?uuid=" + player.getStringUUID())))
+                            return style.withClickEvent(new ClickEvent.OpenUrl(new URI("https://sillyserver.win/ranks?uuid=" + player.getStringUUID())))
                                     .withColor(ChatFormatting.GREEN)
                                     .withUnderlined(true);
                         } catch (URISyntaxException e) {

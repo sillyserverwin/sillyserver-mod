@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Sillyserver implements ModInitializer {
 	public static final String MOD_ID = "sillyserver";
+    public static final String API_ENDPOINT = "http://localhost:4000";
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -36,11 +37,14 @@ public class Sillyserver implements ModInitializer {
     private static final Timer UPDATE_TIMER =  new Timer();
 
     static {
+        Config.ConfigValues cfg = Config.getConfig();
+
         httpClient =  HttpClient.newHttpClient();
 
         try {
             HttpRequest req = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:4000/ranks"))
+                    .uri(new URI(API_ENDPOINT + "/ranks"))
+                    .setHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((cfg.api_user() + ":" + cfg.api_token()).getBytes()))
                     .GET()
                     .build();
             httpClient.send(req, HttpResponse.BodyHandlers.ofString())
@@ -67,7 +71,7 @@ public class Sillyserver implements ModInitializer {
 
         try {
             HttpRequest req = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:4000/player/" + player.getStringUUID() + "/rank"))
+                    .uri(new URI(API_ENDPOINT + "/player/" + player.getStringUUID() + "/rank"))
                     .GET()
                     .build();
             AtomicReference<Rank> rank = new AtomicReference<>();
@@ -93,7 +97,7 @@ public class Sillyserver implements ModInitializer {
     public static List<Rank> getUnlockedRanks(Player player) {
         try {
             HttpRequest req = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:4000/player/" + player.getStringUUID() + "/ranks"))
+                    .uri(new URI(API_ENDPOINT + "/player/" + player.getStringUUID() + "/ranks"))
                     .GET()
                     .build();
             AtomicReference<List<Rank>> ranks = new AtomicReference<>();
@@ -129,14 +133,13 @@ public class Sillyserver implements ModInitializer {
         });
         CommandRegistrationCallback.EVENT.register(CommandManager::registerCommands);
 
-
         UPDATE_TIMER.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 try {
                     System.out.println("Updating ranks...");
                     HttpRequest req = HttpRequest.newBuilder()
-                            .uri(new URI("http://localhost:4000/rankupdates?last_updated=" + lastUpdate))
+                            .uri(new URI(API_ENDPOINT + "/rankupdates?last_updated=" + lastUpdate))
                             .GET()
                             .build();
                     httpClient.send(req, HttpResponse.BodyHandlers.ofString())

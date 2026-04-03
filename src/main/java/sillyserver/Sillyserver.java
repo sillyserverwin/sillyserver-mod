@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.world.entity.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +20,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Sillyserver implements ModInitializer {
 	public static final String MOD_ID = "sillyserver";
-    public static final String API_ENDPOINT = "http://localhost:4000";
+    public static final String API_ENDPOINT = "https://api.sillyserver.win";
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -34,7 +36,6 @@ public class Sillyserver implements ModInitializer {
     public static final Map<UUID, Rank> CACHE =  new HashMap<>();
     private static long lastUpdate = 0;
     private static final HttpClient httpClient;
-    private static final Timer UPDATE_TIMER =  new Timer();
 
     static {
         Config.ConfigValues cfg = Config.getConfig();
@@ -133,9 +134,11 @@ public class Sillyserver implements ModInitializer {
         });
         CommandRegistrationCallback.EVENT.register(CommandManager::registerCommands);
 
-        UPDATE_TIMER.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
+        AtomicInteger tick = new AtomicInteger();
+
+        ServerTickEvents.START_SERVER_TICK.register(server -> {
+            if (tick.get() >= 20 * 60) {
+                tick.set(0);
                 try {
                     System.out.println("Updating ranks...");
                     HttpRequest req = HttpRequest.newBuilder()
@@ -162,7 +165,9 @@ public class Sillyserver implements ModInitializer {
                 } catch (URISyntaxException e) {
                     System.err.println(e.getLocalizedMessage());
                 }
+            } else {
+                tick.addAndGet(1);
             }
-        }, 0, 60000);
+        });
 	}
 }

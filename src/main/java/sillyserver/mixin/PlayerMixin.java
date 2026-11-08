@@ -7,7 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import sillyserver.PlayerNameFormatter;
+import sillyserver.format.PlayerNameFormatter;
 import sillyserver.Rank;
 import sillyserver.Sillyserver;
 

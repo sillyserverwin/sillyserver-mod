@@ -108,11 +108,13 @@ public class CommandManager {
                                         return 0;
                                     }
 
-                                    MutableComponent previewName = MutableComponent.create(Component.literal("<").getContents());
-                                    previewName.append(PlayerNameFormatter.formatPlayerName(rank, player.getScoreboardName()));
-                                    previewName.append(Component.literal("> This is a rank preview."));
+                                    net.kyori.adventure.text.Component preview = net.kyori.adventure.text.Component.text()
+                                        .append(net.kyori.adventure.text.Component.text("<"))
+                                        .append(PlayerNameFormatter.formatPlayerName(rank, player.getScoreboardName()))
+                                        .append(net.kyori.adventure.text.Component.text("> This is a rank preview."))
+                                        .build();
 
-                                    context.getSource().sendSuccess(() -> previewName, false);
+                                    context.getSource().sendMessage(preview);
 
                                     return 1;
                                 })))

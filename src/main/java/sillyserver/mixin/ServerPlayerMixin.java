@@ -1,5 +1,6 @@
 package sillyserver.mixin;
 
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,14 +13,16 @@ import sillyserver.Sillyserver;
 
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin {
-    @Inject(method="getTabListDisplayName", at=@At("HEAD"), cancellable = true)
+    @Inject(method = "getTabListDisplayName", at = @At("HEAD"), cancellable = true)
     private void getTabListDisplayName(CallbackInfoReturnable<Component> cir) {
-        ServerPlayer player = (ServerPlayer)(Object)this;
+        ServerPlayer player = (ServerPlayer) (Object) this;
 
         Rank rank = Sillyserver.getPlayerRank(player);
         if (rank != null) {
-            Component ret = PlayerNameFormatter.formatPlayerName(rank, player.getScoreboardName());
-            cir.setReturnValue(ret);
+            net.kyori.adventure.text.Component ret = PlayerNameFormatter.formatPlayerName(rank,
+                    player.getScoreboardName());
+            MinecraftServerAudiences audiences = MinecraftServerAudiences.of(player.level().getServer());
+            cir.setReturnValue(audiences.nonWrappingSerializer().serialize(ret));
         }
     }
 }

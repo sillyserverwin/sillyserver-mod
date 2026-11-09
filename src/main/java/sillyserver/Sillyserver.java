@@ -160,6 +160,8 @@ public class Sillyserver implements ModInitializer {
                                 }
                             });
                     lastUpdate = System.currentTimeMillis();
+                    // TODO:
+                    // server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, player));
                 } catch (IOException | InterruptedException e) {
                     LOGGER.error("Error fetching ranks: {}", e.getLocalizedMessage());
                 } catch (URISyntaxException e) {
